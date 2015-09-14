@@ -24,7 +24,6 @@ class UserdetailsSpider(scrapy.Spider):
       #Reads in a set of userids and then loops through them
       ifile  = open('filepath', "rb")
       reader =  csv.DictReader(ifile)
-      names=defaultdict(list)
       for row in reader: #Loops through the user ids
          i=row['user_id']
          time.sleep(5)  #Adds in a 5 second delay
