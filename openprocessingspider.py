@@ -40,8 +40,8 @@ class ProcessingSpider(scrapy.Spider):
         # The html we are looking for. We want the number e.g. 2083 from the below
         # <h3><a href="/user/2083/">Patrick May</a></h3>
         #The xpath expression below extracts the numeric userid of the user
-        cities=hxs.xpath('//h3/a/@href').extract()
-        for elem in cities: #loops through the returned titles
+        followers=hxs.xpath('//h3/a/@href').extract()
+        for elem in followers: #loops through the returned titles
            item=ProuserItem()
            #This extracts the userid from the hyperlink, probably better with a regex
            name=response.url 
