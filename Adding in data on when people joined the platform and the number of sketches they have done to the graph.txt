@@ -1,0 +1,63 @@
+############################################################################################################################
+#Works out how many artworks people created from the data on individual artworks
+art<-read.csv("filepath of the individual artworks data.csv" ,header=T) 
+
+#removes duplicates
+art<-unique(art)
+
+#Functions that remove leading and trailing whitespace
+trim.leading <- function (x)  sub("^\\s+", "", x)
+trim.trailing <- function (x) sub("\\s+$", "", x)
+
+#Removes new line characters
+
+art$name<-gsub("\\n", "",art$name )
+
+art$name<-trim.trailing(trim.leading(art$name))
+
+#Calculates how many sketches people have put up
+workno<-table(art$name)
+
+#Converts it to a dataframe with names variable Var1 and key variable Freq 
+workno<-as.data.frame(workno)
+
+workno$Var1<-as.character(workno$Var1)
+
+##############################################################################################################################
+#Reads in the data on when people jointed the platform
+people<-read.csv("file path of personal profile data.csv" ,header=T) 
+
+
+#Cleans the name data to extract the username
+people$name<-gsub("The Processing Portfolio of","",people$name)
+people$name<-gsub("\\n", "",people$name )
+people$name<-gsub(" - OpenProcessing", "",people$name )
+people$name<-trim.leading(people$name)
+
+
+#Cleans the joining data, extracts the date joined and formats as a date 
+people$joined<-gsub(".*member since"," ",people$joined) #Removes all the text before member since
+people$joined<-gsub("\\n\\t\\t\\t", "", people$joined) #Uses a / to escape the //
+people$joined<-gsub("\\t\\t\\t\\t\\t" , "", people$joined)
+
+people$joined<-trim.leading(people$joined)
+
+#Codes the date time format
+#The datetime format used March 26 2008
+people$joined<- strptime(people$joined, "%B %e %Y")
+
+people$joinyear <- strftime(people$joined, format="%Y")
+
+#################################################################################################################################
+#Reads in the graph file and merge the data with it as graph vertex attributes
+library('igraph')
+
+#Merges the data with the graph file
+openpro<-read.graph("filepath of graph.graphml", format="graphml")
+
+
+#merges people's data with the graph
+V(openpro)$name<-as.character(people$name[match(V(openpro)$id, people$ids)])
+V(openpro)$joined<-as.character(people$joined[match(V(openpro)$id, people$ids)])
+V(openpro)$worknos<-as.character(workno$Freq[match(V(openpro)$name, workno$Var1)])
+
