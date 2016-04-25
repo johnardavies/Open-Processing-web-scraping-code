@@ -1,0 +1,15 @@
+#plot of degree by number of works in logs          
+qplot(y=log(as.numeric(V(openpro)$degree)), x=log(as.numeric(V(openpro)$worknos)),xlab="Number of works (in logs)", ylab="Degree of creator(in logs)")#
+          
+#plot of number of works by the number of years          
+qplot(y=log(as.numeric(V(openpro)$worknos)), x=V(openpro)$yr,ylab="Number of works (in logs)", xlab="year")# 
+          
+#Histogram of degrees of people in the network, again in logs        
+qplot(log(V(openpro)$degree),
+      geom="histogram",
+      binwidth = 0.5,  
+      main = "Histogram for degree of network participants (in logs)", 
+      xlab = "degree (in logs)",
+      fill=I("blue")
+      )
+          
