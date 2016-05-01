@@ -4,7 +4,7 @@ library('ggplot2')
 qplot(y=as.numeric(V(openpro)$degree), x=as.numeric(V(openpro)$worknos),xlab="Number of works (in logs)", ylab="Degree of creator(in logs)", log="xy")#
           
 #plot of number of works by the number of years, with the number of works in logs          
-qplot(y=as.numeric(V(openpro)$worknos), x=V(openpro)$yr,ylab="Number of works (in logs)", xlab="year" log="y")# 
+qplot(y=as.numeric(V(openpro)$worknos), x=V(openpro)$yr,ylab="Number of works (in logs)", xlab="year", log="y")# 
           
 #Histogram of degrees of people in the network, again in logs        
 qplot(log(V(openpro)$degree),
