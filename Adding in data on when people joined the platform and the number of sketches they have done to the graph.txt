@@ -60,4 +60,5 @@ openpro<-read.graph("filepath of graph.graphml", format="graphml")
 V(openpro)$name<-as.character(people$name[match(V(openpro)$id, people$ids)])
 V(openpro)$joined<-as.character(people$joined[match(V(openpro)$id, people$ids)])
 V(openpro)$worknos<-as.character(workno$Freq[match(V(openpro)$name, workno$Var1)])
+V(openpro)$joinyear<-as.character(people$joinyear[match(V(openpro)$id, people$ids)])
 
