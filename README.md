@@ -1,1 +1,1 @@
-# web-scraping-code Repo for webscraping projects with scrapy
+# Repo for webscraping projects with scrapy
