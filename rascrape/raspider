@@ -46,12 +46,11 @@ class radvSpider(scrapy.Spider):
 
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
-        #This xpath extracts the list elements
-        titles=hxs.xpath('//li[contains(@class,"clearfix")]') #The extract command operated on the hxs.xpath element that is returned.
+        #This xpath extracts the list elements#The extract command operated on the hxs.xpath element that is returned.
         items=[]
-       # titles=hxs.xpath('//a[contains(@href,"club.aspx")]/text()') #The extract command operated on the hxs.xpath element that is returned. The // means it applies to everything in the document
+        titles=hxs.xpath('//li[contains(@class,"clearfix")]') 
         #Creates an empty list
-        #Loops from the collected list elements
+        #Loops through the collected list elements
         for elem in titles:
           #Starts up an item class
           item=RascrapeItem()
