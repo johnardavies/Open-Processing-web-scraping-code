@@ -1,0 +1,80 @@
+import scrapy
+import urlparse
+import re
+from scrapy.spiders import BaseSpider,Rule
+from scrapy.linkextractors.sgml import SgmlLinkExtractor
+from scrapy.linkextractors.lxmlhtml import LxmlLinkExtractor
+from scrapy.selector import HtmlXPathSelector  #Imports the html xpath selector
+from rascraper.items import RascrapeItem #Imports the items class that was created which is called RascrapeItem
+import time
+
+class radvSpider(scrapy.Spider):
+    name = "raspider"  #The name that you call the spider from the command line
+    allowed_domains = ["https://www.residentadvisor.net"]
+    start_urls=['https://www.residentadvisor.net/clubs.aspx'] #The starting URL
+        
+   #Want to look for the following regions
+   #ai=13 London
+   #ai=14 Midlands
+   #ai=16 North
+   #ai=35 Northern Ireland
+   #ai=15 South East
+   #ai=30 Scotland
+   #ai=24 Wales and the West
+    
+    def __init__(self):
+       self.page_number=1 #not used in this spider
+       
+    def start_requests(self):
+      #Loops through the page numbers indicated above
+      pages=[13,14,16,35,15,30,24]
+      status=['open', 'closed']
+      for y in status:
+        for x in pages:
+          #Loops through the user ids
+          time.sleep(5)  #Adds in a 5 second delay
+          #Example of what the url looks like
+          #https://www.residentadvisor.net/clubs.aspx?ai=24&status=closed
+          URL='https://www.residentadvisor.net/clubs.aspx?ai='+str(x)+'&status='+y+''
+          #Creates the corresponding http call
+          print URL
+          yield scrapy.Request(url=URL , callback= self.parse) #Calls the parsing function
+
+       #The data that we're looking for
+       #<li class=clearfix><div class=fl style="width:160px;">
+       #<a href=/club.aspx?id=19440> Zigfrid Von Underbelly</a></div><div class="fl grey mobile-off" style=width:464px;>11 Hoxton Square; Hoxton;  N1 6NU</div></li>  
+
+    def parse(self, response):
+        hxs = HtmlXPathSelector(response)
+        #This xpath extracts the list elements
+        titles=hxs.xpath('//li[contains(@class,"clearfix")]') #The extract command operated on the hxs.xpath element that is returned.
+        items=[]
+       # titles=hxs.xpath('//a[contains(@href,"club.aspx")]/text()') #The extract command operated on the hxs.xpath element that is returned. The // means it applies to everything in the document
+        #Creates an empty list
+        #Loops from the collected list elements
+        for elem in titles:
+          #Starts up an item class
+          item=RascrapeItem()
+          #Extracts the names from the list element
+          #If the . is not there you extract all the links 
+          item["name"]=elem.xpath('.//a[contains(@href,"club.aspx")]/text()').extract()
+          #Extracts the address information from the list element
+          #If the . is not there you extract all the links  
+          address=str(elem.xpath('.//div[contains(@class,"fl grey mobile-off")]/text()').extract())
+          address=address.replace(",","") #removes commas
+          item["address"]=address
+          #uses a regular expression to extract the status from the hyperlink
+          item["status"] = re.findall(r'&status=(\w+)', str(response.url))[0] #Extracts whether the venue is open or closed
+          item["region"]= re.findall(r'ai=(\d+)', str(response.url))[0] #Extracts the numeric area coding
+          items.append(item)
+        return items
+
+
+#Commands that are run
+# 1. To set up the project folder CD to the project director and run
+# scrapy startproject rascraper 
+# 2. Then run run
+# scrapy crawl raspider -o items.csv 
+#
+# Note in the settings file that the user agent is set so that the agent is identified as a browser
+#USER_AGENT = 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36'
