@@ -62,3 +62,14 @@ V(openpro)$joined<-as.character(people$joined[match(V(openpro)$id, people$ids)])
 V(openpro)$worknos<-as.character(workno$Freq[match(V(openpro)$name, workno$Var1)])
 V(openpro)$joinyear<-as.character(people$joinyear[match(V(openpro)$id, people$ids)])
 
+#Adds in the degrees and indegrees
+
+s1<-as.data.frame(degree(openpro, mode="in"))
+s<-cbind(s, names(degree(openpro)))
+
+
+V(openpro)$degree<-s$`degree(openpro)`
+V(openpro)$indegree<-s1$`degree(openpro, mode = "in")`
+
+
+
