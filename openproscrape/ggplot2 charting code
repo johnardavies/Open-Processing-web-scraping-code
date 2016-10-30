@@ -14,4 +14,34 @@ qplot(log(V(openpro)$degree),
       xlab = "degree (in logs)",
       fill=I("blue")
       )
+      
+#And doing plots in the ggplot2 framework     
+#Plots the graph information
+library('ggplot2')
+
+#This generates a plot of the number of works by the number of followers
+f<-cbind(log(as.numeric(V(openpro)$worknos)),log(as.numeric(V(openpro)$indegree)))
+f<-as.data.frame(f)
+f<-subset(f,f[,1]>=0 & f[,2]>=0)
+ggplot(f, aes(f[,1] ,f[,2]))  +ylab('Number of followers (in logs)')+xlab('Number of works (in logs)')+theme(axis.title=element_text(size=12, face= "bold"))+ggtitle('Relationship between the number of works and followers')+ theme(plot.title = element_text(lineheight=.8, face="bold"))+ geom_smooth(method = "lm", se = FALSE)+ geom_jitter(width = 0.01, height = 0.01)
+
+#Generates the number of followers histogram
+ggplot(f, aes(f[,2])) + geom_histogram(binwidth = 1, colour="blue",fill="blue")+xlab('Number of followers (in logs)')+ylab('Count')+theme(axis.title=element_text(size=12, face= "bold"))+ggtitle('Distribution of the number of followers')+ theme(plot.title = element_text(lineheight=.8, face="bold"))
+
+#This generates a stem and leaf plot of number of followers by year joined
+f<-cbind(V(openpro)$joinyear, log(as.numeric(V(openpro)$indegree)))
+f<-subset(f,is.na(f[,1])==FALSE & is.na(f[,2])==FALSE)
+f[,1]<-as.factor(f[,1])
+f<-as.data.frame(f)
+p <- ggplot(f, aes(as.factor(as.character(f[,1])), as.numeric(f[,2])))
+p + geom_boxplot(width=1)
+
+#This generates a violin plot of number of followers by year joined
+f<-cbind(V(openpro)$joinyear, log(as.numeric(V(openpro)$indegree)))
+f<-subset(f,is.na(f[,1])==FALSE & is.na(f[,2])==FALSE)
+f[,1]<-as.charcter(f[,1])
+f<-as.data.frame(f)
+p <- ggplot(f, aes(as.character(f[,1]), as.numeric(f[,2])))
+p + geom_violin(width=1)+ylab('Number of followers (in logs)')+xlab('Year joined')
+
           
